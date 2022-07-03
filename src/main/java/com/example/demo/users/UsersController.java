@@ -1,9 +1,7 @@
 package com.example.demo.users;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,4 +16,21 @@ public class UsersController {
     public List<Users> getAllUsers() {
         return userService.getAllUsers();
     }
+
+
+    @PutMapping (path = "/update")
+    public void updateUser(@RequestBody Users user) {
+        userService.updateUser(user);
+    }
+
+    @PostMapping (path = "/add")
+    public void addUser(@RequestBody Users user) {
+        userService.addUser(user);
+    }
+
+    @DeleteMapping (path = "{userId}")
+    public void deleteUser(@PathVariable("userId") Long id) {
+        userService.deleteUser(id);
+    }
+
 }

@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static java.beans.Beans.isInstanceOf;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,8 +54,7 @@ class UsersServiceTest {
                 LocalDateTime.now(),
                 "123456"
         );
-
-        given(userRepository.existsById(user.getId())).willReturn(true);
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
         // when
         underTest.updateUser(user);
@@ -63,6 +63,72 @@ class UsersServiceTest {
         ArgumentCaptor<Users> usersArgumentCaptor = ArgumentCaptor.forClass(Users.class);
         verify(userRepository).save(usersArgumentCaptor.capture());
         assertThat(usersArgumentCaptor.getValue()).isEqualTo(user);
+    }
+
+    @Test
+    void canUpdateUserWhenEmailChanged() {
+        // given
+        Users user = new Users(
+                1L,
+                "john49",
+                "John",
+                "Dao",
+                "john.dao@gmail.com",
+                LocalDateTime.now(),
+                "123456"
+        );
+        Users updatedUser = new Users(
+                1L,
+                "john49",
+                "John",
+                "Dao",
+                "johnyyyy.dao@gmail.com",
+                LocalDateTime.now(),
+                "123456"
+        );
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        given(userRepository.existsByEmail(updatedUser.getEmail())).willReturn(false);
+        // when
+        underTest.updateUser(updatedUser);
+
+        // then
+        ArgumentCaptor<Users> usersArgumentCaptor = ArgumentCaptor.forClass(Users.class);
+        verify(userRepository).save(usersArgumentCaptor.capture());
+        assertThat(usersArgumentCaptor.getValue()).isEqualTo(updatedUser);
+    }
+
+    @Test
+    void canUpdateUserWhenUsernameChanged() {
+        // given
+        Users user = new Users(
+                1L,
+                "john49",
+                "John",
+                "Dao",
+                "john.dao@gmail.com",
+                LocalDateTime.now(),
+                "123456"
+        );
+        Users updatedUser = new Users(
+                1L,
+                "john49000",
+                "John",
+                "Dao",
+                "john.dao@gmail.com",
+                LocalDateTime.now(),
+                "123456"
+        );
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        given(userRepository.existsByUsername(updatedUser.getUsername())).willReturn(false);
+        // when
+        underTest.updateUser(updatedUser);
+
+        // then
+        ArgumentCaptor<Users> usersArgumentCaptor = ArgumentCaptor.forClass(Users.class);
+        verify(userRepository).save(usersArgumentCaptor.capture());
+        assertThat(usersArgumentCaptor.getValue()).isEqualTo(updatedUser);
     }
 
     @Test
@@ -78,7 +144,6 @@ class UsersServiceTest {
                 LocalDateTime.now(),
                 "123456"
         );
-        given(userRepository.existsById(user.getId())).willReturn(false);
 
         // when
         // then
@@ -102,13 +167,24 @@ class UsersServiceTest {
                 LocalDateTime.now(),
                 "123456"
         );
-        given(userRepository.existsByEmail(user.getEmail())).willReturn(true);
-        given(userRepository.existsById(user.getId())).willReturn(true);
+        Users updatedUser = new Users(
+                1L,
+                "john49",
+                "John",
+                "Dao",
+                "johnyyyy.dao@gmail.com",
+                LocalDateTime.now(),
+                "123456"
+        );
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        given(userRepository.existsByEmail(updatedUser.getEmail())).willReturn(true);
+
         // when
         // then
-        assertThatThrownBy(() -> underTest.updateUser(user))
+        assertThatThrownBy(() -> underTest.updateUser(updatedUser))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("User with email " + user.getEmail() + " already exists");
+                .hasMessageContaining("User with email " + updatedUser.getEmail() + " already exists");
         verify(userRepository, never()).save(any());
 
     }
@@ -126,13 +202,24 @@ class UsersServiceTest {
                 LocalDateTime.now(),
                 "123456"
         );
-        given(userRepository.existsByUsername(user.getUsername())).willReturn(true);
-        given(userRepository.existsById(user.getId())).willReturn(true);
+        Users updatedUser = new Users(
+                1L,
+                "johny490",
+                "John",
+                "Dao",
+                "johny.dao@gmail.com",
+                LocalDateTime.now(),
+                "123456"
+        );
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        given(userRepository.existsByUsername(updatedUser.getUsername())).willReturn(true);
+
         // when
         // then
-        assertThatThrownBy(() -> underTest.updateUser(user))
+        assertThatThrownBy(() -> underTest.updateUser(updatedUser))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("User with username " + user.getUsername() + " already exists");
+                .hasMessageContaining("User with username " + updatedUser.getUsername() + " already exists");
         verify(userRepository, never()).save(any());
 
     }

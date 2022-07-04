@@ -23,12 +23,14 @@ public class UsersService {
     }
 
     public void updateUser(Users user) {
-        if (!userRepository.existsById(user.getId()))
-            throw new BadRequestException("User with id " + user.getId() + " is not in the database");
-        if (userRepository.existsByEmail(user.getEmail()))
-            throw new BadRequestException("User with email " + user.getEmail() + " already exists");
-        if (userRepository.existsByUsername(user.getUsername()))
-            throw new BadRequestException("User with username " + user.getUsername() + " already exists");
+        Users actualUser = userRepository.findById(user.getId()).orElseThrow(
+                () -> new BadRequestException("User with id " + user.getId() + " is not in the database"));
+        if(!actualUser.getEmail().equals(user.getEmail()))
+            if (userRepository.existsByEmail(user.getEmail()))
+                throw new BadRequestException("User with email " + user.getEmail() + " already exists");
+        if(!actualUser.getUsername().equals(user.getUsername()))
+            if (userRepository.existsByUsername(user.getUsername()))
+                throw new BadRequestException("User with username " + user.getUsername() + " already exists");
         userRepository.save(user);
     }
 

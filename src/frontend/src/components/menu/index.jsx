@@ -9,19 +9,24 @@ const NavBar = () => {
   return (
     <div className='wrapper'>
       <nav>
-        <NavLink 
-        to='/dashboard'>
+        <NavLink
+        className={"button"}
+        to='/'>
           <DashboardIcon className='icon' />
           <p>DashBoard</p>
         </NavLink>
-        {/* <NavLink>
+        <NavLink
+        className={"button"}
+        to='/users'>
           <GroupIcon className='icon' />
           <p>Users</p>
         </NavLink>
-        <NavLink>
+        <NavLink
+        className={"button"}
+        to='/messages'>
           <MessageIcon className='icon' />
           <p>Messages</p>
-        </NavLink> */}
+        </NavLink>
       </nav>
     </div>
   );

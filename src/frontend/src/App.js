@@ -9,14 +9,15 @@ const Users = lazy(() => import('./components/users/index.jsx'));
 function App() {
   return (
     <>
-    <NavBar/>
-    <Router>
-      <Suspense>
-        <Routes>
-            <Route path='/dashboard' element={<Users />} />
-        </Routes>
-      </Suspense>
-    </Router>
+      <Router>
+        <Suspense>
+          <Routes>
+            <Route path={'/'} element={<><NavBar /></>} />
+            <Route  path='/users' element={<><NavBar /><Users /></>} />
+            <Route  path='/messages' element={<><NavBar /><Users /></>} />
+          </Routes>
+        </Suspense>
+      </Router>
     </>
   );
 }
